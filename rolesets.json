@@ -1,0 +1,71 @@
+{
+    "groupId": 2593707,
+    "roles": [
+      {
+        "id": 17178630,
+        "name": "Guest",
+        "rank": 0,
+        "memberCount": 0
+      },
+      {
+        "id": 22622717,
+        "name": "Rescue Hero",
+        "rank": 1,
+        "memberCount": 110062
+      },
+      {
+        "id": 17183355,
+        "name": "Trained Respondent",
+        "rank": 20,
+        "memberCount": 217
+      },
+      {
+        "id": 17183357,
+        "name": "Dedicated Respondent",
+        "rank": 29,
+        "memberCount": 125
+      },
+      {
+        "id": 17183356,
+        "name": "Elite Respondent",
+        "rank": 31,
+        "memberCount": 91
+      },
+      {
+        "id": 68940287,
+        "name": "Marshall",
+        "rank": 35,
+        "memberCount": 11
+      },
+      {
+        "id": 38168385,
+        "name": "Specialist",
+        "rank": 39,
+        "memberCount": 8
+      },
+      {
+        "id": 17179389,
+        "name": "Chief",
+        "rank": 41,
+        "memberCount": 1
+      },
+      {
+        "id": 71385454,
+        "name": "🤖Kronos",
+        "rank": 45,
+        "memberCount": 1
+      },
+      {
+        "id": 18510533,
+        "name": "Facilitator",
+        "rank": 50,
+        "memberCount": 4
+      },
+      {
+        "id": 17178627,
+        "name": "Owner",
+        "rank": 255,
+        "memberCount": 1
+      }
+    ]
+  }
