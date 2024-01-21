@@ -1,4 +1,7 @@
-import requests, roblox, database
+import requests, roblox, database,os,datetime, time
+from dotenv import load_dotenv
+
+load_dotenv()
 groupid = 2593707
 
 rolesets = {
@@ -32,6 +35,29 @@ def checkKey(dic, key):
 def startGossip(uid: int, message:str):
     # Sends notifications/messages via https about someone's rank
     print("Starting gossip.. ooh!!!")
+    webhookurl = os.getenv("WEBHOOK_URL")
+    name = roblox.getNameFromUid(uid)
+    thumbnailurl = roblox.getThumbnailUrl(uid)
+    data = {
+        "content": None,
+        "embeds": [
+            {
+                "title": name,
+                "description": f"""
+{message}
+""",
+                "color": 16745298,
+                "timestamp": str(datetime.datetime.fromtimestamp(time.time())),
+                "image": {
+                    "url": thumbnailurl
+                }, 
+                "footer": {
+                "text": "Programmed by claym1x"
+            }
+            }
+        ],
+    }
+    requests.post(webhookurl, json=data) #Discord webhook
 
 def checkForDifferences():
     data = database.readDB("PET")
@@ -80,6 +106,6 @@ def checkForDifferences():
 
     
 
+startGossip(767877034, "**Claym1x** made a cool thing or smth idk")
 
-
-checkForDifferences()
+#checkForDifferences()

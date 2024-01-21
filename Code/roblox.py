@@ -65,8 +65,18 @@ def getUserRoleInGroup(groupId: int, userId: int):
     else:
         print(res.json())
     return False
-            
+
+def getThumbnailUrl(uid:int):
+    url = f"https://thumbnails.roblox.com/v1/users/avatar?userIds={str(uid)}&size=150x150&format=Png&isCircular=false"
+    request = requests.get(url)
+    if request.status_code == 200:
+        return request.json()['data'][0]['imageUrl']            
         
+def getNameFromUid(uid:int):
+    request = requests.get(f"https://users.roblox.com/v1/users/{str(uid)}")
+    if request.status_code == 200:
+        return request.json()['name']
+
 
 #print(len(GetGroupMembersByRole(2593707,17183357)))
 # print(GetRoleMembercount(2593707, 17183357))
