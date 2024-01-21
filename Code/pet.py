@@ -31,7 +31,7 @@ def checkKey(dic, key):
     
 def startGossip(uid: int, message:str):
     # Sends notifications/messages via https about someone's rank
-    pass
+    print("Starting gossip.. ooh!!!")
 
 def checkForDifferences():
     data = database.readDB("PET")
