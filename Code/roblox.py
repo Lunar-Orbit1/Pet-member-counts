@@ -6,13 +6,14 @@ def RecurseGroupMembersByRoleWithCursor(id:int, roleid:int, cursor:str, members:
     if request.status_code == 200:
         requestJson = request.json()
         for x in requestJson['data']:
-            tr.append(x)
+            tr.append(x['userId'])
 
         # problem child
 
 
         if requestJson['nextPageCursor'] != None:
             return RecurseGroupMembersByRoleWithCursor(id, roleid, requestJson['nextPageCursor'], tr)
+        
         else:
             return tr
             
@@ -29,12 +30,12 @@ def GetGroupMembersByRole(id:int, roleid:int):
     if request.status_code == 200:
         requestJson = request.json()
         for x in requestJson['data']:
-            memberuids.append(x)
+            memberuids.append(x['userId'])
         if requestJson['nextPageCursor'] != None:
             #There is another page, recurse
             recursed = RecurseGroupMembersByRoleWithCursor(id, roleid,requestJson['nextPageCursor'])
-            for x in recursed:
-                memberuids.append(x)
+            for v in recursed:
+                memberuids.append(v)
     else:
         print(request.status_code)
         print(request.json())
@@ -52,7 +53,20 @@ def GetRoleMembercount(id:int,roleid:int, memberlist:list=[]):
         return len(GetGroupMembersByRole(id, roleid))
     else:
         return len(memberlist)
+
+def getUserRoleInGroup(groupId: int, userId: int):
+    url = f"https://groups.roblox.com/v2/users/{str(userId)}/groups/roles?includeLocked=false"
+    res = requests.get(url)
+    if res.status_code == 200:
+        data = res.json()['data']
+        for i, group in enumerate(data):
+            if group['group']['id']==groupId:
+                return group['role']['name']
+    else:
+        print(res.json())
+    return False
+            
         
 
-# print(GetGroupMembersByRole(2593707,17183355))
+#print(len(GetGroupMembersByRole(2593707,17183357)))
 # print(GetRoleMembercount(2593707, 17183357))

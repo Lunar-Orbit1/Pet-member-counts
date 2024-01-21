@@ -2,57 +2,84 @@ import requests, roblox, database
 groupid = 2593707
 
 rolesets = {
-    "TR": {
-        "name": "Trained Respondent",
-        "id": 17183355,
-        "count": 0,
-    },
-    "DR":{
-        "name": "Dedicated Respondent",
-        "id": 17183357,
-        "count":0,
-    },
     "ER":{
         "name": "Elite Respondent",
         "id":17183356,
-        "count": 0,
+        "rank": 0, #Arbitrary number
     },
     "MR":{
         "name": "Marshall",
         "id":68940287,
-        "count": 0,
+        "rank": 1, #Arbitrary number
     },
     "SP":{
         "name": "Specialist",
         "id":38168385,
-        "count":0,
+        "rank": 2, #Arbitrary number
     },
-    "CHEIF":{
-        "name": "Cheif",
+    "CHIEF":{
+        "name": "Chief",
         "id":17179389,
-        "count":0
+        "rank": 69, #Arbitrary number
     },
 }
-
-
-
+def checkKey(dic, key):
+    if key in dic.keys():
+        return True
+    else:
+        return False
+    
+def startGossip(uid: int, message:str):
+    # Sends notifications/messages via https about someone's rank
+    pass
 
 def checkForDifferences():
     data = database.readDB("PET")
     if data is None:
-        data = rolesets
-    for i,x in enumerate(rolesets):
-        # Get the lists for the roles, check how many people are in it and compare to the db
-        # if it's the same, delete the data and move on
-        # else handle the promotion and save the data
-        print(rolesets[x])
-        memberList = roblox.GetGroupMembersByRole(groupid, rolesets[x]['id'])
-        oldData = data[x]
-        if oldData['count'] != len(memberList):
-            # Discrepancy detected, loop through both lists and see what's changed
-            print("Yay")
-        else:
-            print("Nyooo")
+        data = {}
+    currentMembers = {}
+    rankCounts = {
+        'ER' : roblox.GetGroupMembersByRole(groupid, rolesets['ER']['id']),
+        'MR' : roblox.GetGroupMembersByRole(groupid, rolesets['MR']['id']),
+        'SP' : roblox.GetGroupMembersByRole(groupid, rolesets['SP']['id']),
+        'CHIEF' :roblox.GetGroupMembersByRole(groupid, rolesets['CHIEF']['id']),
+    }
+    for role in rankCounts:
+        for i,member in enumerate(rankCounts[role]):
+            currentMembers[member] = role
+
+    if len(currentMembers) != len(data):
+        print(f"A difference of {str(len(currentMembers)-len(data))} detected")
+        actions = {} #Members who changed, with human readable descriptions
+        for uid in currentMembers:
+            if not checkKey(data, uid):
+                # The user was promoted from a LR rank
+                actions[uid] = f"Promoted to {rolesets[currentMembers[uid]]['name']}"
+            elif data[uid] != currentMembers[uid] and rolesets[currentMembers[uid]]['rank'] > rolesets[data[uid]]['rank']:
+                #The user was promoted from an existing mr rank
+                actions[uid] = f"Promoted to {rolesets[currentMembers[uid]]['name']} from {rolesets[data[uid]]['name']}"
+
+        for uid in data:
+            if not checkKey(currentMembers, uid):
+                # User is no longer in an mr rank. Check if they left or were demoted.
+                role = roblox.getUserRoleInGroup(groupid, uid)
+                print(role)
+                if role == False:
+                    actions[uid] = f"Left the group from {rolesets[data[uid]]['name']}"
+                else:
+                    actions[uid] = f"Demoted to {role} from {rolesets[data[uid]]['name']}"
+            elif data[uid] != currentMembers[uid] and checkKey(actions, uid) == False:
+                # User got demoted to another mr rank
+                actions[uid] = f"Demoted to {rolesets[currentMembers[uid]]['name']} from {rolesets[data[uid]]['name']}"
+
+        database.writeDB("PET", currentMembers)
+        print("Wrote difference to db")
+
+    else:
+        print("No difference detected")
+
+    
+
 
 
 checkForDifferences()
