@@ -1,23 +1,22 @@
-import requests
+import requests, time
 def RecurseGroupMembersByRoleWithCursor(id:int, roleid:int, cursor:str, members:list=[], toreturn:bool=True):
-    tr = members
     url =f"https://groups.roblox.com/v1/groups/{str(id)}/roles/{str(roleid)}/users?limit=100&sortOrder=Asc&cursor={cursor}"
     request = requests.get(url)
     if request.status_code == 200:
         requestJson = request.json()
         for x in requestJson['data']:
-            tr.append(x['userId'])
+            members.append(x['userId'])
 
-        # problem child
+        if requestJson['nextPageCursor'] != None and requestJson['nextPageCursor'] != cursor:
+            print(requestJson['nextPageCursor'])
+            url =f"https://groups.roblox.com/v1/groups/{str(id)}/roles/{str(roleid)}/users?limit=100&sortOrder=Asc&cursor={requestJson['nextPageCursor']}"
+            request = requests.get(url)
+            if request.status_code == 200:
+                requestJson = request.json()
+                for x in requestJson['data']:
+                    members.append(x['userId'])
 
-
-        if requestJson['nextPageCursor'] != None:
-            return RecurseGroupMembersByRoleWithCursor(id, roleid, requestJson['nextPageCursor'], tr)
-        
-        else:
-            return tr
-            
-
+        return members
     else:
         print(request.status_code)
         print(request.json())
@@ -34,6 +33,7 @@ def GetGroupMembersByRole(id:int, roleid:int):
         if requestJson['nextPageCursor'] != None:
             #There is another page, recurse
             recursed = RecurseGroupMembersByRoleWithCursor(id, roleid,requestJson['nextPageCursor'])
+            print(f"REC: {len(recursed)}")
             for v in recursed:
                 memberuids.append(v)
     else:
@@ -76,7 +76,3 @@ def getNameFromUid(uid:int):
     request = requests.get(f"https://users.roblox.com/v1/users/{str(uid)}")
     if request.status_code == 200:
         return request.json()['name']
-
-
-#print(len(GetGroupMembersByRole(2593707,17183357)))
-# print(GetRoleMembercount(2593707, 17183357))
