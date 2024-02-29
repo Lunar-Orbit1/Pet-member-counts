@@ -67,7 +67,8 @@ def startGossip(uid: int, message:str):
             }
         ],
     }
-    requests.post(webhookurl, json=data) #Discord webhook
+    #requests.post(webhookurl, json=data) #Discord webhook
+    print("posted")
 
 def checkForDifferences():
     data = database.readDB("PET")
